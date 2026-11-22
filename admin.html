@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>অ্যাডমিন — অর্ধনারীশ্বর</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Hind Siliguri','Noto Sans Bengali',sans-serif;}
+body{background:#F3EDDD;color:#2b2320;}
+.top{background:#4A0E12;color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+.top h1{font-size:19px;color:#F3CD6B;}
+.top a{color:#f3e2c7;font-size:13.5px;}
+.wrap{max-width:1060px;margin:0 auto;padding:16px;display:grid;grid-template-columns:330px 1fr;gap:16px;}
+@media(max-width:760px){.wrap{grid-template-columns:1fr;}}
+.panel{background:#fff;border:1px solid #eee0bd;border-radius:12px;padding:14px;}
+.panel h3{color:#4A0E12;font-size:16px;margin-bottom:10px;}
+.prow{display:flex;gap:10px;align-items:center;padding:8px;border:1px solid #f0e4c4;border-radius:9px;margin-bottom:8px;cursor:pointer;}
+.prow:hover{border-color:#C68E20;}
+.prow.sel{border-color:#7A1218;background:#FBEEE9;}
+.prow img{width:46px;height:46px;object-fit:cover;border-radius:7px;}
+.prow b{font-size:14px;display:block;}
+.prow small{color:#8a7a63;font-size:12px;}
+label.fl{display:block;font-size:13px;font-weight:600;color:#4A0E12;margin:11px 0 4px;}
+input.fi,textarea.fi,select.fi{width:100%;border:1.5px solid #e0d0a5;border-radius:8px;padding:9px;font-size:14.5px;outline:none;background:#FFFDF6;}
+textarea.fi{resize:vertical;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn{background:#7A1218;color:#fff;border:0;padding:11px 18px;border-radius:9px;font-weight:700;cursor:pointer;font-size:14.5px;}
+.btn.gold{background:#C68E20;}
+.btn.ghost{background:#fff;color:#7A1218;border:1.5px solid #7A1218;}
+.btn.danger{background:#b03a2e;}
+.btn:disabled{opacity:.5;cursor:wait;}
+#log{background:#2b2320;color:#F3CD6B;border-radius:9px;padding:10px;font-size:12.5px;white-space:pre-wrap;min-height:44px;line-height:1.6;}
+.hint{font-size:12.5px;color:#8a7a63;line-height:1.6;margin-top:6px;}
+.thumb{width:110px;height:110px;object-fit:cover;border-radius:9px;border:1px solid #eee0bd;display:block;margin-top:6px;}
+.chk{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:14px;font-weight:600;color:#4A0E12;}
+</style>
+</head>
+<body>
+<div class="top"><h1>🛠️ অ্যাডমিন প্যানেল — অর্ধনারীশ্বর</h1><a href="index.html" target="_blank">সাইট দেখুন ↗</a></div>
+<div class="wrap">
+  <div>
+    <div class="panel">
+      <h3>⚙️ GitHub সেটিংস (একবারই লাগবে)</h3>
+      <label class="fl">GitHub Username</label><input class="fi" id="gOwner" placeholder="যেমন: joychy">
+      <label class="fl">Repository নাম</label><input class="fi" id="gRepo" placeholder="যেমন: ardhanarishwar-shop">
+      <label class="fl">Branch</label><input class="fi" id="gBranch" value="main">
+      <label class="fl">GitHub Token (Personal Access Token)</label><input class="fi" id="gToken" type="password" placeholder="github_pat_...">
+      <p class="hint">Token তৈরি: GitHub → Settings → Developer settings → Fine-grained tokens → শুধু এই repo-তে <b>Contents: Read and write</b> permission দিয়ে তৈরি করুন। Token শুধু এই ব্রাউজারেই থাকে, কোথাও পাঠানো হয় না।</p>
+      <button class="btn gold" style="margin-top:10px" onclick="saveGh()">সেটিংস সেভ করুন</button>
+    </div>
+    <div class="panel" style="margin-top:16px">
+      <h3>🏪 দোকানের সেটিংস</h3>
+      <label class="fl">দোকানের নাম</label><input class="fi" id="sName">
+      <label class="fl">ট্যাগলাইন</label><input class="fi" id="sTag">
+      <label class="fl">Messenger লিংক (m.me/...)</label><input class="fi" id="sMsg" placeholder="https://m.me/yourpage">
+      <div class="grid2">
+        <div><label class="fl">ডেলিভারি — ঢাকার ভিতরে (৳)</label><input class="fi" id="sDin" type="number"></div>
+        <div><label class="fl">ডেলিভারি — ঢাকার বাইরে (৳)</label><input class="fi" id="sDout" type="number"></div>
+      </div>
+      <label class="fl">ডেলিভারি নোট</label><input class="fi" id="sDnote">
+    </div>
+    <div class="panel" style="margin-top:16px">
+      <h3>📦 প্রোডাক্ট তালিকা</h3>
+      <div id="plist"></div>
+      <button class="btn gold" style="width:100%" onclick="addProduct()">＋ নতুন প্রোডাক্ট যোগ করুন</button>
+    </div>
+  </div>
+  <div>
+    <div class="panel">
+      <h3>✏️ প্রোডাক্ট এডিট</h3>
+      <div id="editor"><p class="hint">বাম পাশের তালিকা থেকে একটি প্রোডাক্ট সিলেক্ট করুন, অথবা নতুন যোগ করুন।</p></div>
+    </div>
+    <div class="panel" style="margin-top:16px">
+      <h3>🚀 সাইটে পাবলিশ করুন</h3>
+      <p class="hint" style="margin:0 0 10px">সব পরিবর্তন শেষ হলে এই বাটনে ক্লিক করুন — products.json ও নতুন ছবি GitHub-এ আপলোড হবে, Vercel ১ মিনিটের মধ্যে সাইট আপডেট করে দেবে।</p>
+      <button class="btn" id="pubBtn" onclick="publish()">সেভ ও পাবলিশ করুন</button>
+      <div id="log" style="margin-top:12px">প্রস্তুত।</div>
+    </div>
+  </div>
+</div>
+<script>
+let DB = null, CUR = -1, stagedImages = {}; // filename -> dataURL (jpeg)
+const $ = id => document.getElementById(id);
+const log = m => { $('log').textContent = m; };
+
+function loadGh() {
+  const g = JSON.parse(localStorage.getItem('gh') || '{}');
+  $('gOwner').value = g.owner || ''; $('gRepo').value = g.repo || '';
+  $('gBranch').value = g.branch || 'main'; $('gToken').value = g.token || '';
+}
+function saveGh() {
+  localStorage.setItem('gh', JSON.stringify({owner: $('gOwner').value.trim(), repo: $('gRepo').value.trim(), branch: $('gBranch').value.trim() || 'main', token: $('gToken').value.trim()}));
+  log('GitHub সেটিংস সেভ হয়েছে ✓');
+}
+function gh() { return JSON.parse(localStorage.getItem('gh') || '{}'); }
+
+fetch('products.json').then(r => r.json()).then(d => { DB = d; fillSettings(); renderList(); }).catch(() => log('products.json লোড হয়নি!'));
+loadGh();
+
+function fillSettings() {
+  const s = DB.settings || {};
+  $('sName').value = s.shopName || ''; $('sTag').value = s.tagline || ''; $('sMsg').value = s.messenger || '';
+  $('sDin').value = s.deliveryInsideDhaka ?? 60; $('sDout').value = s.deliveryOutsideDhaka ?? 120; $('sDnote').value = s.deliveryNote || '';
+}
+function collectSettings() {
+  DB.settings = {shopName: $('sName').value, tagline: $('sTag').value, messenger: $('sMsg').value.trim(),
+    phone: (DB.settings || {}).phone || '', deliveryInsideDhaka: Number($('sDin').value) || 0,
+    deliveryOutsideDhaka: Number($('sDout').value) || 0, deliveryNote: $('sDnote').value};
+}
+function renderList() {
+  $('plist').innerHTML = DB.products.map((p, i) =>
+    `<div class="prow ${i===CUR?'sel':''}" onclick="edit(${i})"><img src="images/${p.image}"><div><b>${p.name}</b><small>${p.category} • ${p.price == null ? 'দাম সেট হয়নি' : '৳' + p.price}</small></div></div>`).join('');
+}
+function linesToArr(t) { return t.split('\n').map(x => x.trim()).filter(Boolean); }
+function edit(i) {
+  CUR = i; renderList();
+  const p = DB.products[i];
+  $('editor').innerHTML = `
+    <label class="fl">প্রোডাক্টের নাম</label><input class="fi" id="eName" value="${esc(p.name)}">
+    <div class="grid2">
+      <div><label class="fl">ক্যাটাগরি</label><select class="fi" id="eCat">${(DB.categories || []).map(c => `<option ${c===p.category?'selected':''}>${c}</option>`).join('')}</select></div>
+      <div><label class="fl">ID (ইংরেজি, স্পেস ছাড়া)</label><input class="fi" id="eId" value="${esc(p.id)}"></div>
+    </div>
+    <div class="grid2">
+      <div><label class="fl">দাম (৳) — খালি রাখলে "ইনবক্স করুন" দেখাবে</label><input class="fi" id="ePrice" type="number" value="${p.price ?? ''}"></div>
+      <div><label class="fl">আগের দাম (৳, ছাড় দেখাতে)</label><input class="fi" id="eOld" type="number" value="${p.oldPrice ?? ''}"></div>
+    </div>
+    <label class="fl">প্রধান ছবি</label>
+    <img class="thumb" id="eThumb" src="${stagedImages[p.image] || 'images/' + p.image}">
+    <input class="fi" id="eImg" value="${esc(p.image)}" style="margin-top:8px">
+    <input type="file" id="eFile" accept="image/*" style="margin-top:8px" onchange="onFile(this)">
+    <p class="hint">নতুন ছবি আপলোড করলে তা অটো-রিসাইজ হয়ে পাবলিশের সময় GitHub-এ যাবে।</p>
+    <label class="fl">অতিরিক্ত ছবি (এক লাইনে একটি ফাইলের নাম)</label><textarea class="fi" id="eImgs" rows="2">${esc((p.images || []).join('\n'))}</textarea>
+    <label class="fl">তথ্য চিপস (প্রতি লাইনে: লেবেল | মান) — যেমন: দেবতা | ভগবান শিব</label>
+    <textarea class="fi" id="eChips" rows="3">${esc((p.chips || []).map(c => c.join(' | ')).join('\n'))}</textarea>
+    <label class="fl">কারা ব্যবহার করতে পারবেন (প্রতি লাইনে একটি)</label><textarea class="fi" id="eWho" rows="3">${esc((p.who || []).join('\n'))}</textarea>
+    <label class="fl">উপকারিতা (প্রতি লাইনে একটি)</label><textarea class="fi" id="eBen" rows="4">${esc((p.benefits || []).join('\n'))}</textarea>
+    <label class="fl">ব্যবহারের নিয়ম (প্রতি লাইনে একটি)</label><textarea class="fi" id="eRules" rows="3">${esc((p.rules || []).join('\n'))}</textarea>
+    <label class="chk"><input type="checkbox" id="eStock" ${p.stock ? 'checked' : ''}> স্টকে আছে</label>
+    <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">
+      <button class="btn" onclick="applyEdit()">✓ পরিবর্তন প্রয়োগ করুন</button>
+      <button class="btn danger" onclick="delProduct()">🗑️ ডিলিট করুন</button>
+    </div>
+    <p class="hint">"প্রয়োগ" করলে শুধু এই পেজে আপডেট হবে — লাইভ করতে ডানপাশে/নিচে "সেভ ও পাবলিশ" চাপুন।</p>`;
+}
+function esc(s) { return String(s ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;'); }
+function onFile(inp) {
+  const f = inp.files[0]; if (!f) return;
+  const img = new Image();
+  img.onload = () => {
+    const max = 1000, sc = Math.min(1, max / Math.max(img.width, img.height));
+    const cv = document.createElement('canvas');
+    cv.width = Math.round(img.width * sc); cv.height = Math.round(img.height * sc);
+    cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+    const name = 'img-' + Date.now() + '.jpg';
+    stagedImages[name] = cv.toDataURL('image/jpeg', 0.86);
+    $('eImg').value = name; $('eThumb').src = stagedImages[name];
+    log('ছবি প্রস্তুত: ' + name + ' — এখন "প্রয়োগ" ও "পাবলিশ" করুন।');
+  };
+  img.src = URL.createObjectURL(f);
+}
+function applyEdit() {
+  if (CUR < 0) return;
+  const p = DB.products[CUR];
+  p.name = $('eName').value; p.id = $('eId').value.trim() || p.id; p.category = $('eCat').value;
+  p.price = $('ePrice').value === '' ? null : Number($('ePrice').value);
+  p.oldPrice = $('eOld').value === '' ? null : Number($('eOld').value);
+  p.image = $('eImg').value.trim(); p.images = linesToArr($('eImgs').value);
+  p.chips = linesToArr($('eChips').value).map(l => l.split('|').map(x => x.trim())).filter(a => a.length >= 2);
+  p.who = linesToArr($('eWho').value); p.benefits = linesToArr($('eBen').value); p.rules = linesToArr($('eRules').value);
+  p.stock = $('eStock').checked;
+  collectSettings(); renderList();
+  log('প্রয়োগ হয়েছে ✓ — লাইভ করতে "সেভ ও পাবলিশ করুন" চাপুন।');
+}
+function addProduct() {
+  DB.products.push({id: 'product-' + Date.now(), name: 'নতুন প্রোডাক্ট', category: (DB.categories || ['রুদ্রাক্ষ'])[0],
+    price: null, oldPrice: null, image: '', images: [], chips: [], who: [], benefits: [], rules: [], stock: true});
+  edit(DB.products.length - 1);
+}
+function delProduct() {
+  if (CUR < 0 || !confirm('এই প্রোডাক্টটি ডিলিট করবেন?')) return;
+  DB.products.splice(CUR, 1); CUR = -1; renderList();
+  $('editor').innerHTML = '<p class="hint">ডিলিট হয়েছে — লাইভ করতে "সেভ ও পাবলিশ" চাপুন।</p>';
+}
+function b64encode(str) {
+  const bytes = new TextEncoder().encode(str);
+  let bin = ''; bytes.forEach(b => bin += String.fromCharCode(b));
+  return btoa(bin);
+}
+async function ghPut(path, contentB64, msg) {
+  const g = gh();
+  const url = `https://api.github.com/repos/${g.owner}/${g.repo}/contents/${path}`;
+  let sha = null;
+  const r0 = await fetch(url + '?ref=' + (g.branch || 'main'), {headers: {Authorization: 'Bearer ' + g.token, Accept: 'application/vnd.github+json'}});
+  if (r0.ok) sha = (await r0.json()).sha;
+  const r = await fetch(url, {method: 'PUT', headers: {Authorization: 'Bearer ' + g.token, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json'},
+    body: JSON.stringify({message: msg, content: contentB64, branch: g.branch || 'main', ...(sha ? {sha} : {})})});
+  if (!r.ok) throw new Error(path + ' আপলোড হয়নি (' + r.status + '): ' + (await r.text()).slice(0, 160));
+}
+async function publish() {
+  const g = gh();
+  if (!g.owner || !g.repo || !g.token) { log('আগে GitHub সেটিংস (username, repo, token) পূরণ করে সেভ করুন।'); return; }
+  if (CUR >= 0 && $('eName')) applyEdit(); else collectSettings();
+  $('pubBtn').disabled = true;
+  try {
+    const names = Object.keys(stagedImages);
+    for (const n of names) {
+      log('ছবি আপলোড হচ্ছে: ' + n + ' ...');
+      await ghPut('images/' + n, stagedImages[n].split(',')[1], 'Add image ' + n);
+    }
+    log('products.json আপলোড হচ্ছে...');
+    await ghPut('products.json', b64encode(JSON.stringify(DB, null, 1)), 'Update products');
+    stagedImages = {};
+    log('✅ পাবলিশ সম্পন্ন! Vercel ৩০-৬০ সেকেন্ডের মধ্যে সাইট আপডেট করে দেবে। তারপর সাইট রিফ্রেশ করে দেখুন।');
+  } catch (e) { log('❌ সমস্যা: ' + e.message); }
+  $('pubBtn').disabled = false;
+}
+</script>
+</body>
+</html>
